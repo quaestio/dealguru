@@ -14,6 +14,7 @@ class Home extends CI_Controller {
 		$data['msg']="this is msg";
 		$data['deals']=$this->login_model->select_deals();
 		$this->load->view('home',$data);
+		//
 	}
 
 	
