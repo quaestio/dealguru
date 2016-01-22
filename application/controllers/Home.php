@@ -7,12 +7,12 @@ class Home extends CI_Controller {
 	{
 		// Call the Model constructor
 		parent::__construct();
-		$this->load->model('login_model');
+	//	$this->load->model('login_model');
 	}
 	public function index()
 	{
 		$data['msg']="this is msg";
-		$data['deals']=$this->login_model->select_deals();
+		//$data['deals']=$this->login_model->select_deals();
 		$this->load->view('home',$data);
 		//
 	}
