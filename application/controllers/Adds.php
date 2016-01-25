@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Home extends CI_Controller {
+class Adds extends CI_Controller {
 
 	function __construct()
 	{
@@ -9,12 +9,11 @@ class Home extends CI_Controller {
 		parent::__construct();
 		$this->load->model('timeline_model');
 	}
-	public function index()
+	public function post_add()
 	{
 		$data['msg']="this is msg";
-		$data['deal_categories']=$this->timeline_model->deal_categories();
-		$data['deals']=$this->timeline_model->deals();
-		$this->load->view('home',$data);
+		echo json_encode($this->timeline_model->save_add());
+		 
 		
 	}
 

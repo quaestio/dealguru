@@ -1,12 +1,4 @@
-@import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,300italic,400italic,600italic);
 
-@import url(//fonts.googleapis.com/css?family=Kaushan+Script);
-/*! 
- *   AdminLTE v1.2
- *   Author: AlmsaeedStudio.com
- *   License: Open source - MIT
- *           Please visit http://opensource.org/licenses/MIT for more information
-!*/
 /*
     Core: General style
 ----------------------------
@@ -304,6 +296,7 @@ img {
     margin: 0;
   }
 }
+
 /* Remove border radius */
 .flat {
   -webkit-border-radius: 0 !important;
@@ -979,6 +972,7 @@ body > .header .logo .icon {
   .navbar-nav > .tasks-menu > .dropdown-menu > li.header,
   .navbar-nav > .messages-menu > .dropdown-menu > li.header {
     /* Remove arrow from the top */
+    
   }
   .navbar-nav > .notifications-menu > .dropdown-menu > li.header:after,
   .navbar-nav > .tasks-menu > .dropdown-menu > li.header:after,
@@ -1652,6 +1646,7 @@ Component: timeline
   padding: 0;
   list-style: none;
 }
+/*
 .timeline:before {
   content: '';
   position: absolute;
@@ -1665,7 +1660,7 @@ Component: timeline
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
-}
+}*/
 .timeline > li {
   position: relative;
   margin-right: 10px;
@@ -1684,8 +1679,7 @@ Component: timeline
   border: 0px solid #dfdfdf;
   background: #fff;
   color: #555;
-  margin-left: 60px;
-  margin-right: 15px;
+  
   padding: 5px;
   position: relative;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
@@ -1694,6 +1688,7 @@ Component: timeline
   color: #999;
   float: right;
   margin: 2px 0 0 0;
+  font-size:68%;
 }
 .timeline > li > .timeline-item > .timeline-header {
   margin: 0;
@@ -1702,6 +1697,9 @@ Component: timeline
   padding: 5px;
   font-size: 16px;
   line-height: 1.1;
+}
+.timeline > li > .timeline-item > .timeline-footer > .tag_category {
+font-size:68%
 }
 .timeline > li > .timeline-item > .timeline-header > a {
   font-weight: 600;
