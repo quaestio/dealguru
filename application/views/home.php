@@ -21,8 +21,25 @@
           <script src="<?=base_url();?>plugins/misc/html5shiv.js"></script>
           <script src="<?=base_url();?>plugins/misc/respond.min.js"></script>
         <![endif]-->
+        <style>
+        .loadButton {
+            position: relative;
+            text-align: center;
+            border: 1px solid darkgray;
+            width: 810px;
+            padding: 10px 0px 10px 0px;
+            margin: 0 auto;
+            background: #c1dae4;
+            color: #303030;
+            font-family: Arial,Helvetica,sans-serif;
+        }
+        
+        .loadButton:hover {
+            background: azure;
+        }
+        </style>
     </head>
-    <body class="skin-blue">
+    <body class="skin-blue fixed">
         <!-- header logo: style can be found in header.less -->
        <?php $this->load->view('includes/header');?>
         <div class="wrapper row-offcanvas row-offcanvas-left">
@@ -33,14 +50,33 @@
             <aside class="right-side">
                 <!-- Content Header (Page header) -->
              
-	                         <section class="content-header">
-			                   <form class="sidebar-form" method="get" action="#">
-			                        <div class="input-group">
-			                            <input type="text" placeholder="Search..." class="form-control" name="q">
-			                            <span class="input-group-btn">
-			                                <button class="btn btn-flat" id="search-btn" name="seach" type="submit"><i class="fa fa-search"></i></button>
-			                            </span>
-			                        </div>
+	                         <section class="content-header clearfix">
+			                   <form class="sky-form" method="get" action="#">
+			                    <section  class="col-md-6 col-xs-6">
+							
+									<label class="select">
+									<select name="Search_category" id="Search_category">
+									<option value="">--Select Category--</option>
+										<?php foreach($deal_categories as $cItems):?>
+										<option value="<?=$cItems['CATEGORY_ID']?>"><?=$cItems['CATEGORY_NAME']?></option>
+										<?php endforeach;?>
+									</select>
+										<i></i>
+									</label>
+							
+								</section>
+								<section  class="col-md-6 col-xs-6">
+							
+									<label class="select">
+									<select name="Search_City" id="Search_City">
+									<option value="">--Select City--</option>
+										
+									</select>
+										<i></i>
+									</label>
+							
+								</section>
+			                       
 			                    </form>
 			                </section>
 			              
@@ -49,7 +85,7 @@
 
                     <!-- row -->
                     <div class="row">                        
-                        <div class="col-md-12">
+                        <div class="col-md-8">
                             <!-- The time line -->
                             <ul class="timeline">
                             <?php foreach($deals as $items):?>
@@ -59,17 +95,18 @@
                                 <li>
                                       <div class="timeline-item">
                                         <span class="time"><i class="fa fa-clock-o"></i> <?=post_time(strtotime($items['date_created']));?></span>
-                                        <h3 class="timeline-header">
-                                        	<div class="pull-left image">
-                           				 		<img alt="<?=$this->session->userdata('full_name')?>" class="img-circle" src="<?=base_url();?>user_imgs/<?=md5($this->session->userdata('id_user')).$this->session->userdata('mime')?>" onError="this.onerror=null;this.src='<?=base_url();?>img/user.png';" width="40px">
-                        					</div>
-                        					<a href="#"><?=$items['full_name'];?></a></h3>
+                                        <div class="timeline-header">
+                                        		<img alt="<?=$this->session->userdata('full_name')?>" class="img-circle" src="<?=base_url();?>user_imgs/<?=md5($this->session->userdata('id_user')).$this->session->userdata('mime')?>" onerror="this.onerror=null;this.src='<?=base_url();?>img/user.png';" width="40px" />
+                        					
+                        					<a href="#"><?=$items['full_name'];?></a>
+                        					<div class="deal_title text-blue "><?=$items['deal_title'];?></div>
+                        				</div>
 	                                        <div class="timeline-body">
 	                                            <?=$items['deal_summery'];?>
 	                                        </div>
 	                                         <?php foreach($items['images'] as $Imgitems):?>
 	                                        <div class="timeline-body">
-	                                            <img class="img-thumbnail" src="<?=base_url()."/adds_images/".$Imgitems['IMG_ID'].$Imgitems['MIME'];?>" />
+	                                            <img class="img-thumbnail" src="<?=base_url()."/adds_images/thumb/".$Imgitems['IMG_ID']."_thumb".$Imgitems['MIME'];?>" />
 	                                        </div>
 	                                         <?php endforeach;?>
                                         <div class='timeline-footer'>
@@ -82,6 +119,10 @@
                                 <!-- END timeline item -->
                                 
                             </ul>
+                             <div id="loadButton" class="loadButton">Load More</div>
+                        </div><!-- /.col -->
+                          <div class="col-md-4">
+                          adds
                         </div><!-- /.col -->
                     </div><!-- /.row -->
 
@@ -204,6 +245,7 @@
 $(document).ready(function (e) {
 	$("#PostAdd").on('submit',(function(e) {
 		e.preventDefault();
+		$('#myModal').modal('hide')
 		$.ajax({
         	url: "<?=base_url();?>adds/post_add",
 			type: "POST",
@@ -212,29 +254,28 @@ $(document).ready(function (e) {
     	    cache: false,
 			processData:false,
 			success: function(data)
-		    {var obj = JSON.parse(data);
-        		if(data.error=="")
-        		{
-					$dt='<li>
-                    <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> Just Now</span>
-                    <h3 class="timeline-header">
-                    	<div class="pull-left image">
-       				 		<img alt="<?=$this->session->userdata('full_name')?>" class="img-circle" src="<?=base_url();?>user_imgs/<?=md5($this->session->userdata('id_user')).$this->session->userdata('mime')?>" onError="this.onerror=null;this.src='<?=base_url();?>img/user.png';" width="40px">
-    					</div>
-    					<a href="#"><?=$items['full_name'];?></a></h3>
-                        <div class="timeline-body">'+DEAL_SUMMARY+'</div>
-                        
-                        <div class="timeline-body">
-                            Image will be shown when uploaded
-                        </div>
-                       
-                   
-                </div>
-            </li>';
-            		
-        			$( ".timeline" ).prepend( "<li>"+dt+"</li>" );
-        		}
+		    {
+    		    var obj = JSON.parse(data);
+    		         		
+        			if(obj.stat)
+        			{
+	            		var timeline_data='<li> <div class="timeline-item">'+
+	            		'<span class="time"><i class="fa fa-clock-o"></i> </span>'+
+	            		'<h3 class="timeline-header">'+
+	            		'<div class="pull-left image">'+
+	            		'<img width="40px" src="'+obj.user_image_url+'" class="img-circle" alt="'+obj.full_name+'">'+
+	            		'</div>'+
+	            		'<a href="#">'+obj.full_name+'</a>'+
+			            '<div>'+obj.deal_details.DEAL_TITLE+'</div>'+
+			            '</h3>'+
+			            '<div class="timeline-body">'+obj.deal_details.DEAL_SUMMARY+'</div>'+
+			            '<div class="alert alert-danger alert-dismissable"><i class="fa fa-ban"></i><button aria-hidden="true" data-dismiss="alert" class="close" type="button">x</button><b>Alert!</b> Image will be displayed after moderator verification</div>'+
+						
+			             '	</div>'+
+			            '</li>';
+	        			$( ".timeline" ).prepend( timeline_data );
+        			}
+        		
 		    },
 		  	error: function() 
 	    	{
@@ -247,6 +288,38 @@ $(document).ready(function (e) {
 		});
 });
 </script>
+<script type="text/javascript">
+        $(document).ready(function(){
+            $.ajaxSetup({cache: false}); // disabling cache, omit if u dont need
+            var defaultBtnText = "Load More Content";
+            var buttonLoadingText = "<img src='img/loading.gif' alt='' /> Loading..";
+            $(document).scroll(function(){
+                if ($(window).scrollTop() + $(window).height() >= $(document).height())
+                {
+                    
+                    loadMore();
+                }
+            });
+            
+            
+                loadMore();
+            
+            
+            function loadMore()
+            {
+                $("#loadButton").html(buttonLoadingText);
+                $.ajax({
+                    url: '<?=base_url();?>adds/load_posts',
+                    method: 'get',
+                    success: function(data){
+                        $(".timeline").append(data);
+                        $("#loadButton").html(defaultBtnText);
+                    }
+                });
+            }
+            
+        });
+    </script>
 <?php $this->load->view('includes/footer');?>
     </body>
 </html>

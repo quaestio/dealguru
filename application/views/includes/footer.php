@@ -46,6 +46,7 @@ $("#btnLogin").click(function(e){
 				     
 				    },
 				    function(data, status){
+					   // alert (data);
 					    if(data){
 					    	 location.reload();
 					    }

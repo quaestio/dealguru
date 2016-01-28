@@ -12,7 +12,7 @@ public function deals()
 	{
 		$array_index=0;
 		$display = array();
-		$sql = "SELECT DEAL_ID, DEAL_SUMMARY,CATEGORY_ID, DEAL_END_DATE, DEAL_START_DATE, ROW_CREATE_DATE,LONGITUDE, LATITUDE, PRICE,FULL_NAME 
+		$sql = "SELECT DEAL_ID, DEAL_TITLE,DEAL_SUMMARY,CATEGORY_ID, DEAL_END_DATE, DEAL_START_DATE, ROW_CREATE_DATE,LONGITUDE, LATITUDE, PRICE,FULL_NAME 
 		FROM deal_details,user_details where deal_details.USER_ID=user_details.USER_ID order by ROW_CREATE_DATE desc LIMIT 0,20";
 		$query = $this->db->query($sql);
      	foreach ($query->result() as $row)
@@ -21,6 +21,7 @@ public function deals()
 					$dPath="";
 					
 					$display[$array_index]['deal_id']= $deal_id=$row->DEAL_ID;
+					$display[$array_index]['deal_title']= $row->DEAL_TITLE;
 					$display[$array_index]['deal_summery']= $row->DEAL_SUMMARY;
 					$display[$array_index]['deal_end']= $row->DEAL_END_DATE;
 					$display[$array_index]['deal_start']= $row->DEAL_START_DATE;
@@ -55,57 +56,78 @@ public function deals()
 					
 			$this->db->insert('deal_details', $data); 
 			$max_deal_id=$this->db->insert_id() ;
-		
-		$temp_file_name=temp_image_id();
-		if($_FILES["userfile"]["error"] != 0) 
-			{
-				
-				$config['upload_path'] = './adds_images/actual';
-				$config['allowed_types'] = 'gif|jpg|png';
-				$config['max_size']	= '1000';
-				$config['overwrite'] = TRUE;
-				$config['create_thumb'] = TRUE;
-				$config['maintain_ratio'] = TRUE;
-				$config['max_width']  = '1000';
-				$config['max_height']  = '1000';
-				$config['file_name']  = $temp_file_name;
-				$this->load->library('upload', $config);
-				if ( ! $this->upload->do_upload())
-				{
-					$dataRet['error']= $this->upload->display_errors();
-				}
-				else 		
-				{
-					$uploaded_data=$this->upload->data();
-					$dataRet['stat']= '1';
-					$mime=$uploaded_data['file_ext'];
-					$data_image = array(
-							   'DEAL_ID' => $max_deal_id ,
-							   'MIME' => $mime 
-							);
-					$this->db->insert('deal_images', $data_image); 
-					$max_image_id=$this->db->insert_id() ;
-					$dataRet['image_id']=$max_image_id;
-					$dataRet['image_mime']=$mime;
-					rename("./adds_images/actual/".$temp_file_name.$mime,"./adds_images/actual/".$max_image_id.$mime);
-					//creating the thumbnail
-					$config['image_library'] = 'gd2';
-					$config['source_image'] = "./adds_images/actual/".$temp_file_name.$mime;
-					$config['new_image'] = "./adds_images/thumb/".$temp_file_name.$mime;
-					$config['create_thumb'] = TRUE;
-					$config['maintain_ratio'] = TRUE;
-					$config['width'] = 100;
-					$config['height'] = 100;
-					$this->load->library('image_lib', $config);
-					$this->image_lib->clear();
-    				$this->image_lib->initialize($config);
-					$this->image_lib->resize();	
-					
-				
-				}
 			
-			}		
-					
+			$temp_file_name=temp_image_id();
+	
+			$config['upload_path'] = './adds_images/actual';
+			$config['allowed_types'] = 'gif|jpg|png|jpeg';
+			$config['max_size']	= '1000';
+			$config['overwrite'] = TRUE;
+			$config['create_thumb'] = TRUE;
+			$config['maintain_ratio'] = TRUE;
+			
+			$config['file_name']  = $temp_file_name;
+			$this->load->library('upload', $config);
+			if ( ! $this->upload->do_upload())
+			{
+				echo $this->upload->display_errors();
+				$dataRet['ImageUploaded']= false;
+				$dataRet['ImageDetails']= '';
+			}
+			else 		
+			{
+				$uploaded_data=$this->upload->data();
+				$dataRet['ImageUploaded']= true;
+				$mime=$uploaded_data['file_ext'];
+				$data_image = array(
+						   'DEAL_ID' => $max_deal_id ,
+						   'MIME' => $mime 
+						);
+				
+				$this->db->insert('deal_images', $data_image); 
+				$max_image_id=$this->db->insert_id() ;
+				$dataRet['image_id']=$max_image_id;
+				$dataRet['image_mime']=$mime;
+				rename("./adds_images/actual/".$temp_file_name.$mime,"./adds_images/actual/".$max_image_id.$mime);
+				//creating the thumbnail
+				$config['image_library'] = 'gd2';
+			echo 	$config['source_image'] = "./adds_images/actual/".$max_image_id.$mime;
+			echo "<br>";
+			echo 	$config['new_image'] = "./adds_images/thumb/".$max_image_id.$mime;
+				//$config['create_thumb'] = TRUE;
+				$config['maintain_ratio'] = TRUE;
+				$config['width'] = 350;
+				$config['height'] = 350;
+				$this->load->library('image_lib');
+				$this->image_lib->clear();
+    			$this->image_lib->initialize($config);
+				$this->image_lib->resize();	
+				
+				//watermark
+				$this->image_lib->clear();
+				$configW['source_image'] = "./adds_images/actual/".$max_image_id.$mime;
+				$configW['new_image'] = "./adds_images/actual/".$max_image_id.$mime;
+				$configW['wm_text'] = 'DealGuru - Soumen Das';
+				$configW['wm_type'] = 'text';
+				$configW['wm_font_path'] = './system/fonts/texb.ttf';
+				$configW['wm_font_size'] = '16';
+				$configW['wm_font_color'] = 'ffffff';
+				$configW['wm_vrt_alignment'] = 'center';
+				$configW['wm_hor_alignment'] = 'center';
+				$configW['wm_padding'] = '20';
+				
+				$this->image_lib->initialize($configW);
+				
+				$this->image_lib->watermark();
+				//end watermark 
+				
+				
+			}
+				
+				$dataRet['stat']=true;
+				$dataRet['full_name']=$this->session->userdata('full_name');
+				$dataRet['user_image_url']=$this->session->userdata('user_image_url');
+				$dataRet['stat']=true;
 				$dataRet['deal_details']=$data;
 				
 				return  $dataRet;

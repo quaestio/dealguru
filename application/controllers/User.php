@@ -15,9 +15,9 @@ class User extends CI_Controller {
 		$user_name=makeSafe($this->input->post('email'));
 		$user_pass=makeSafe($this->input->post('pass'));
 		if($this->user_model->check_user($user_name,$user_pass))
-			return true;
+			echo  1;
 		else 
-			return false;
+			echo  0;
 		
 }
 public function logout()
