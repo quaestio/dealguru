@@ -28,20 +28,7 @@
 							<?php endforeach;?>
                               </ul>
                         </li>
-                        <li class="treeview">
-                            <a href="#">
-                                <i class="fa fa-laptop"></i>
-                                <span>Add Posted in</span>
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </a>
-                            <ul class="treeview-menu">
-                                <li><a href="general.html"><i class="fa fa-angle-double-right"></i> General</a></li>
-                                <li><a href="icons.html"><i class="fa fa-angle-double-right"></i> Icons</a></li>
-                                <li><a href="buttons.html"><i class="fa fa-angle-double-right"></i> Buttons</a></li>
-                                <li><a href="sliders.html"><i class="fa fa-angle-double-right"></i> Sliders</a></li>
-                                <li class="active"><a href="timeline.html"><i class="fa fa-angle-double-right"></i> Timeline</a></li>
-                            </ul>
-                        </li>
+                     
                         <li class="treeview">
                             <a href="#">
                                 <i class="fa fa-edit"></i> <span>Posted by</span>

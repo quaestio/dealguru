@@ -26,7 +26,7 @@
             text-align: center;
             border: 1px solid darkgray;
             width: 100%;
-            padding: 5px;
+            padding: 10px 0px 10px 0px;
             margin: 0 auto;
             background: #c1dae4;
             color: #303030;
@@ -52,6 +52,7 @@
 	                         <section class="content-header clearfix">
 			                   <form class="sky-form" method="get" action="#" style="border:none">
 			                    <section  class="col-md-6 col-xs-6">
+							
 									<label class="select">
 									<select name="Search_category" id="Search_category">
 									<option value="">--Select Category--</option>
@@ -69,12 +70,7 @@
 									<label class="select">
 									<select name="Search_City" id="Search_City">
 									<option value="">--Select City--</option>
-										<?php 
-											foreach($deal_zones as $cItems){
-											echo'<option value="'.$cItems['city_id'].'"';
-											if($this->session->userdata('default_zone')==$cItems['city_name']) echo ' selected="selected"';
-											echo'>'.$cItems['city_name'].'</option>';
-											}?>
+										
 									</select>
 										<i></i>
 									</label>
@@ -86,13 +82,68 @@
 			              
                 <!-- Main content -->
                 <section class="content">
-				<div id='sys-msg'></div>
+
                     <!-- row -->
                     <div class="row">                        
-                        <div class="col-md-8">                       
+                        <div class="col-md-8">
                             <!-- The time line -->
                             <ul class="timeline">
-                            
+                            <?php foreach($deals as $items):?>
+                                <!-- timeline time label -->
+                                
+                                <!-- timeline item -->
+                                <li>
+                                      <div class="timeline-item">
+                                       
+                                        <div class="timeline-header clearfix">
+                                        		<img alt="<?=$items['full_name'];?>" class="UserPhoto UserPhoto_medium pull-left img-circle" src="<?=$items['user_image'];?>"  width="40px" />
+                        					<a class="deal_title text-blue "><?=$items['deal_title'];?></a> By
+                        					<a href="#" class='timeline-user'><?=$items['full_name'];?></a>
+                        					 <span class="time pull-right"><i class="fa fa-clock-o"></i> <?=post_time(strtotime($items['date_created']));?></span>
+                        				</div>
+                                        <div class="timeline-body clearfix">
+                                            <div class="col-md-8"><?=clickable_link($items['deal_summery']);?></div>
+                                      		<div class="col-md-4">
+	                                         <?php foreach($items['images'] as $Imgitems):?>
+	                                        
+	                                            <img class="img-responsive adds-image" src="<?=base_url()."/adds_images/thumb/".$Imgitems['IMG_ID']."_thumb".$Imgitems['MIME'];?>" />
+	                                          <?php endforeach;?>
+	                                          </div>
+                                        </div>
+                                        <div id="CommentPosted<?=$items['deal_id']?>" data-id="<?=$items['deal_id']?>" class="commentPanel clearfix">
+                                        <?php 
+                                          foreach($items['deal_comments'] as $DealComment):?>
+	                                        <div align="left" id="record-<?=$DealComment['COMMENT_ID']?>" data-comment-id="<?=$DealComment['COMMENT_ID']?>" class="commentBox">
+												<?php 
+												
+												$path=file_exists(FCPATH."user_imgs/".md5($DealComment['USER_ID']).$DealComment['MIME'])?base_url()."user_imgs/".md5($DealComment['USER_ID']).$DealComment['MIME']:base_url()."img/user.png";
+												?>
+												
+												<img align="left" alt="" style="float:left;" class="UserPhoto UserPhoto_mini left" src="<?=$path;?>">
+												<p><a href="javascript:void(0);"><?=$DealComment['FULL_NAME']?></a>  <span class="date"><?=$DealComment['DATE_TIME']?></span>
+												<?=$DealComment['COMMENT']?></p>
+											</div>
+                                        
+                                         <?php endforeach;?>
+                                        </div>
+                                        <?php if($this->session->userdata('id_user')!="")
+                                        {                                        
+                                        ?>
+                                       <div id="commentBox-<?=$items['deal_id']?>" data-id="<?=$items['deal_id']?>" class="commentBox">
+											<img alt="" style="float:left;" class="UserPhoto UserPhoto_mini left" src="<?=$this->session->userdata('user_image_url')?>">
+													<input type="text" placeholder="Write a comment..." data-deal-id="<?=$items['deal_id']?>" name="commentMark-<?=$items['deal_id']?>" id="commentMark-<?=$items['deal_id']?>" class="commentMark">
+												
+										</div>
+	                                     <?php } 	?>  
+                                        <div class='timeline-footer'>
+                                        	<span class='tag_category'><i class="fa fa-pencil-square-o"></i> <a href="<?=base_url().$items['category']['CATEGORY_NAME'];?>"><?=($items['category']['CATEGORY_NAME']);?></a></span>
+                                           
+                                        </div>
+                                    </div>
+                                </li>
+                                <?php endforeach;?>
+                                <!-- END timeline item -->
+                                
                             </ul>
                              <div id="loadButton" class="loadButton">Load More</div>
                         </div><!-- /.col -->
@@ -149,8 +200,8 @@
 							<option value="">--Select Country--</option>
 								<?php 
 								foreach($deal_countries as $cItems){
-								echo'<option value="'.$cItems['country_id'].'"';
-								if($this->session->userdata('default_country')==$cItems['countries_name']) echo ' selected="selected"';
+								echo'<option value="'.$cItems['countries_id'].'"';
+								if($default_country==$cItems['countries_name']) echo ' selected="selected"';
 								echo'>'.$cItems['countries_name'].'</option>';
 								}
 								
@@ -245,7 +296,7 @@
 		
        </script>
        <script type="text/javascript">
-       
+       var display_order='<?=$order;?>';
 $(document).ready(function (e) {
 	$.ajaxSetup({cache: false}); 
 	$("#PostAdd").on('submit',(function(e) {
@@ -264,13 +315,23 @@ $(document).ready(function (e) {
     		         		
         			if(obj.stat)
         			{
-        				
-		 					$('#sys-msg').html('Your deal posted successfully, will be posted shortly');
-		 					$('#sys-msg').addClass('alert alert-success alert-dismissable');
-							$('#sys-msg').delay(3000).fadeOut();
-	            		
+	            		var timeline_data='<li> <div class="timeline-item">'+
+	            		'<span class="time"><i class="fa fa-clock-o"></i> </span>'+
+	            		'<h3 class="timeline-header">'+
+	            		'<div class="pull-left image">'+
+	            		'<img width="40px" src="'+obj.user_image_url+'" class="img-circle" alt="'+obj.full_name+'">'+
+	            		'</div>'+
+	            		'<a href="#">'+obj.full_name+'</a>'+
+			            '<div>'+obj.deal_details.DEAL_TITLE+'</div>'+
+			            '</h3>'+
+			            '<div class="timeline-body">'+obj.deal_details.DEAL_SUMMARY+'</div>'+
+			            '<div class="alert alert-danger alert-dismissable"><i class="fa fa-ban"></i><button aria-hidden="true" data-dismiss="alert" class="close" type="button">x</button><b>Alert!</b> Image will be displayed after moderator verification</div>'+
+						
+			             '	</div>'+
+			            '</li>';
+	        			$( ".timeline" ).prepend( timeline_data );
         			}
-        			
+        		
 		    },
 		  	error: function() 
 	    	{
@@ -281,15 +342,9 @@ $(document).ready(function (e) {
 	$( "#btnPostAdd" ).click(function() {
 		  $( "#PostAdd" ).submit();
 		});
-	$( "#loadButton" ).click(function() {
-		loadMore();
-		});
-	
-    
-	  
-    
+
             // disabling cache, omit if u dont need
-           var defaultBtnText = "Load More";
+           var defaultBtnText = "Load More Content";
            var buttonLoadingText = "<img src='img/loading.gif' alt='' /> Loading..";
             $(document).scroll(function(){
                 if ($(window).scrollTop() + $(window).height() >= $(document).height())
@@ -297,179 +352,52 @@ $(document).ready(function (e) {
                 
             });
             
-            var offset=0;
-            var limit=5;
-            var loading=false;
+            
                 loadMore();
-            	
+            
             
             function loadMore()
             {
-            	
-                if(!loading){
-                	loading=true;
                 $("#loadButton").html(buttonLoadingText);
                 $.ajax({
-                    url: '<?=base_url();?>timeline/load_posts/'+offset+'/'+limit,
+                    url: '<?=base_url();?>timeline/load_posts/<?=$order;?>/<?=$offset;?>/<?=$limit;?>',
                     method: 'get',
                     success: function(data){
-                    	//$(".timeline").append(data); 
-                        var TimeLineData="";
-                       	var dData=JSON.parse(data);
-                      
-                       		
-                    	for (var i = 0, len = dData.length; i < len; ++i) {
-		  					TimeLineData=  '<li><div class="timeline-item">'+
-		  						'<div class="timeline-header clearfix">'+
-					  				'<img width="40px" src="'+dData[i].user_image+'" class="UserPhoto UserPhoto_medium pull-left img-circle" alt="'+dData[i].full_name+'">'+
-					  				'<a class="deal_title text-blue ">'+dData[i].deal_title+'</a> By	<a class="timeline-user" href="#">'+dData[i].full_name+'</a>'+
-					  				'<span class="time pull-right"><i class="fa fa-clock-o"></i> '+dData[i].date_created+'</span>'+
-				  				'</div>'+
-				  				'<div class="timeline-body clearfix">';
-				  				 //dImages=JSON.parse(dData[i].images);
-			  						lenImg = dData[i].images.length;
-			  						colWidth=12;
-			  						if(lenImg>0) colWidth=8; 
-			  						
-			  						TimeLineData= TimeLineData +'<div class="col-md-'+colWidth+'">'+dData[i].deal_summery+'</div>';		
-			  						TimeLineData= TimeLineData +'<div class="col-md-4">';
-			  						for (var img = 0; img < lenImg; ++img) {
-			  							TimeLineData= TimeLineData +'<img src="<?=base_url();?>adds_images/thumb/'+dData[i].images[img].IMG_ID+'_thumb'+dData[i].images[img].MIME+'" class="img-responsive adds-image">';
-			  							
-
-				  						}
-				  					TimeLineData= TimeLineData +'</div>'+
-				  				'</div>'+
-				  				'<!--commentPanel box-->'+
-				  				'<div class="commentPanel clearfix" data-id="'+dData[i].deal_id+'" id="CommentPosted'+dData[i].deal_id+'">';
-				  				len_deal_comments = dData[i].deal_comments.length;
-				  				for (var dc = 0; dc < len_deal_comments; ++dc) {
-				  					
-				  					TimeLineData= TimeLineData +'<div align="left" class="commentBox" data-comment-id="'+dData[i].deal_comments[dc].COMMENT_ID+'" id="record-'+dData[i].deal_comments[dc].COMMENT_ID+'">'+
-									
-										'<img align="left" src="'+dData[i].deal_comments[dc].C_IMG+'" class="UserPhoto UserPhoto_mini left" style="float:left;" alt="">'+
-										'<p><a href="javascript:void(0);">'+dData[i].deal_comments[dc].FULL_NAME+'</a>  <span class="date">'+dData[i].deal_comments[dc].DATE_TIME+'</span>	'+dData[i].deal_comments[dc].COMMENT+'</p>'+
-									'</div>';
-				  				}
-				  				TimeLineData= TimeLineData +'</div>';
-				  				
-				  			
-				  				<?php 
-				  				if($this->session->userdata('id_user')!="")
-				  				{
-					  					?>
-					  					TimeLineData= TimeLineData +'<div class="commentBox clearfix" data-id="'+dData[i].deal_id+'" id="commentBox-'+dData[i].deal_id+'">'+
-					  				'<img src="<?=$this->session->userdata('user_image_url')==""?'img/user.png':$this->session->userdata('user_image_url');?>" class="UserPhoto UserPhoto_mini left" style="float:left;" alt="">'+
-					  						'<input type="text" class="commentMark" id="commentMark-'+dData[i].deal_id+'" data-deal-id="'+dData[i].deal_id+'" placeholder="Write a comment...">'+
-					  						'<button class="btnPost btn btn-primary" id="D-'+dData[i].deal_id+'" data-deal-id="'+dData[i].deal_id+'">POST</button>'+
-					  					
-					  				'</div>';
-				  					<?php } ?>
-
-								
-								var love_count=dData[i].love_arr.length;
-								var hate_count=dData[i].hate_arr.length;
-								//alert(dData[i].love_arr.length);
-				  				TimeLineData= TimeLineData +'<div class="timeline-footer">'+
-				  				'<span class="tag_category"><i class="fa fa-pencil-square-o"></i> <a href="http://localhost/quaestio/deal_guru/Food">Food</a></span>'+
-				  				'<span class="tag-like pull-right"><i class="fa fa-heart"></i> <a class="like" data_id="'+dData[i].deal_id+'" href="javascript:void(0)">'+love_count+' Love</a></span>'+
-				  				'<span class="tag-hate pull-right"><i class="fa fa-frown-o"></i> <a class="hate" data_id="'+dData[i].deal_id+'" href="javascript:void(0)">'+hate_count+' Dislike</a></span>'+
-				  			   
-				  			'</div>'+
-				  			'</div><!--timeline item--></li>';              	 
-                    	     
-                    	    
-                    	$(".timeline").append(TimeLineData); 
-
-                    	}//for
-                    	 
-                        
+                        $(".timeline").append(data);
                         $("#loadButton").html(defaultBtnText);
-                    },//success
-                    complete: function(data){
-                    	loading=false;
-                    	offset=offset+limit;
-                        //alert (loading);
-                        }
+                    }
                 });
-                
-                }//load more check
             }
-          
-         // end of comment
-         $(document).on('click', "a.like", function(e) {
-         
-      		   e.preventDefault();
-      		 
-      		   $.post("<?=base_url();?>deals/love",
-      				    { 
-      			   			did: $(this).attr("data_id")
-      				     
-      				    },
-      				    function(data, status){
-      						
-      				    		var HData=JSON.parse(data);
-  				    			$('#sys-msg').html(HData.MSG);
-  				    			if(!HData.STAT)
-  				 					$('#sys-msg').addClass('alert alert-danger alert-dismissable');
-  				    			else
-				 					$('#sys-msg').addClass('alert alert-success alert-dismissable');
-  		  				 			
-  				 				$('#sys-msg').delay(3000).fadeOut();
-  				 			
-      				    	
-      				    });
-      		  
-      		});
-         $(document).on('click', "a.hate", function(e) {
-        	
-      		   e.preventDefault();
-      		 
-      		   $.post("<?=base_url();?>deals/hate",
-      				    { 
- 				   			did: $(this).attr("data_id")
-      				     
-      				    },
-      				    function(data, status){
-      							var HData=JSON.parse(data);
-      							$('#sys-msg').html(HData.MSG);
-      							if(!HData.STAT)
-  				 					$('#sys-msg').addClass('alert alert-danger alert-dismissable');
-  				    			else
-				 					$('#sys-msg').addClass('alert alert-success alert-dismissable');
-      							$('#sys-msg').delay(3000).fadeOut();
-      				    });
-      		  
-      		});
-      	  //comment
-         // $(".commentMark").bind("keydown", function(event) {
-       $(document).on('click', "button.btnPost", function(e) {	 
-      	//	var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode));
+            //comment
+            $(".commentMark").bind("keydown", function(event) {
+     
+      var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode));
+      if (keycode == 13) { 
+      	 var deal_id=$(this).attr("data-deal-id");
+      	 if(this.value != "")
+			{
+				$.post("<?=base_url();?>deals/post_comment",{
+					did:deal_id,
+					cmt:this.value 
+				}, function(response){
+					 var objCmtRes = JSON.parse(response);
+					var Reshtml='<div align="left" class="commentBox" data-comment-id="'+objCmtRes.comment_id+'" id="record-'+objCmtRes.comment_id+'">'+
+							 '<img align="left" src="'+objCmtRes.user_image+'" class="UserPhoto UserPhoto_mini left" style="float:left;" alt="">'+
+							 '<p><a href="javascript:void(0);">'+objCmtRes.full_name+'</a>  <span class="date">Just now</span>'+objCmtRes.comment+'</p>'+
+							 '</div>';
+					
+						$("#CommentPosted"+deal_id+"").append($(Reshtml).fadeIn('slow'));
+						$("#commentMark-"+ deal_id +"").val("");
+				 });
+			}
+        
+         return false;
+      } else  {
+         return true;
+      }
+   }); // end of function
 
-      	 	var deal_id=$(this).attr("data-deal-id");
-      	 	
-      	 	
-	      	 if($("#commentMark-"+deal_id+"").val() != "")
-	      	{
-      			$.post("<?=base_url();?>deals/post_comment",{
-	      			did:deal_id,
-	      			cmt:$("#commentMark-"+deal_id+"").val() 
-	      		}, function(response){
-      			 	var objCmtRes = JSON.parse(response);
-      				var Reshtml='<div align="left" class="commentBox" data-comment-id="'+objCmtRes.comment_id+'" id="record-'+objCmtRes.comment_id+'">'+
-      					 '<img align="left" src="'+objCmtRes.user_image+'" class="UserPhoto UserPhoto_mini left" style="float:left;" alt="">'+
-      					 '<p><a href="javascript:void(0);">'+objCmtRes.full_name+'</a>  <span class="date">Just now</span>'+objCmtRes.comment+'</p>'+
-      					 '</div>';
-      			
-      				$("#CommentPosted"+deal_id+"").append($(Reshtml).fadeIn('slow'));
-      				$("#commentMark-"+ deal_id +"").val("");
-      		 });
-      	}
-
-       return false;
-      
-      }); 
-   $('select#deal_country').change(function (event) {loadlist($('select#deal_zones').get(0),'<?=base_url();?>timeline/load_zones/'+$('select#deal_country').val()+'','city_name','city_id');});
+   $('select#deal_country').change(function (event) {loadlist($('select#deal_zones').get(0),'<?=base_url();?>timeline/load_zones/'+$('select#deal_country').val()+'','zone_name','zone_id');});
 	function loadlist(selobj,url,nameattr,valueattr)
 	{
 
@@ -483,12 +411,9 @@ $(document).ready(function (e) {
 	        });
 	    });
 	}
-	loadlist($('select#deal_zones').get(0),'<?=base_url();?>timeline/load_zones/'+$('select#deal_country').val()+'','city_name','city_id');
-   
-
-
-
-    });//document ready
+	loadlist($('select#deal_zones').get(0),'<?=base_url();?>timeline/load_zones/'+$('select#deal_country').val()+'','zone_name','zone_id');
+            
+        });//document ready
     </script>
 <?php $this->load->view('includes/footer');?>
     </body>

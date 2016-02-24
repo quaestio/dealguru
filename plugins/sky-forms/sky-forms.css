@@ -9,10 +9,10 @@
 }
 .sky-form header {
 	display: block;
-	padding: 20px 30px;	
+	padding: 10px;	
 	border-bottom: 1px solid rgba(0,0,0,.1);
 	background: rgba(248,248,248,.9);
-	font-size: 25px;
+	font-size: 20px;
 	font-weight: 300;
 	color: #232323;
 }
@@ -79,7 +79,7 @@
 	height: 39px;
 	padding: 8px 10px;
 	outline: none;
-	border-width: 2px;
+	border-width: 1px;
 	border-style: solid;
 	border-radius: 0;
 	background: #fff;

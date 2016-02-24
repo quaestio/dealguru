@@ -13,13 +13,13 @@
 						<div id="logMessage"></div>
 						<section class="col-md-6">
 							<label class="input">
-								<i class="icon-append fa fa-calendar"></i>
+								<i class="icon-append fa fa-user"></i>
 								<input type="text" name="email" id="email" placeholder="email">
 							</label>
 						</section>
 						<section class="col-md-6">
 							<label class="input">
-								<i class="icon-append fa fa-calendar"></i>
+								<i class="icon-append fa fa-lock"></i>
 								<input type="password" name="pass" id="pass" placeholder="Password">
 							</label>
 						</section>
@@ -37,6 +37,7 @@
 </div>
 <script type="text/javascript">
 $("#btnLogin").click(function(e){
+	var $btn = $(this).button('loading')
 		   e.preventDefault();
 		
 				$.post("<?=base_url();?>user/login",
@@ -47,12 +48,14 @@ $("#btnLogin").click(function(e){
 				    },
 				    function(data, status){
 					   // alert (data);
-					    if(data){
+					    if(data!=0){
 					    	 location.reload();
 					    }
 					    else 
+					    {
 				    	$('#logMessage').html('<div class="alert alert-danger fade in"><button data-dismiss="alert" class="close"><span>x</span></button><strong>Oh!</strong> Invalid username and/or password</div>');
-				  		
+				    	 $btn.button('reset')
+					    }
 				  		
 				    	
 				    });

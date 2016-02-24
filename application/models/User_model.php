@@ -12,8 +12,8 @@ public function check_user($user_name,$user_pass)
          if ( $query->num_rows() > 0 )
             {
                 $row= $query->row();
-				if(file_exists(FCPATH."user_imgs/".md5($row->USER_ID).$row->MIME))
-				   $path=base_url()."user_imgs/".md5($row->USER_ID).$row->MIME;
+				if(file_exists(FCPATH."user_imgs/".$row->USER_ID.$row->MIME))
+				   $path=base_url()."user_imgs/".$row->USER_ID.$row->MIME;
 				  else
 				  $path=base_url()."img/user.png";
 				  
@@ -34,8 +34,48 @@ public function check_user($user_name,$user_pass)
 		else
 			return false;
 	}
-public function logout(){
-		$this->session->sess_destroy();
-		redirect(base_url().'login');
-	}
-}
+	public function logout(){
+			$this->session->sess_destroy();
+			redirect(base_url().'login');
+		}
+	public function register($form_data){
+		$data=array();
+		$data['error']="";
+		$sql = "Select EMAIL_ID FROM user_details where EMAIL_ID='".$form_data['EMAIL_ID']."'";
+			$query = $this->db->query($sql);
+	         if ( $query->num_rows() > 0 )
+	            {
+	             $data['error']="Duplicate email id";
+	            }
+	          else  
+	          {
+	          	$this->db->insert('user_details',$form_data);	
+	          	$data['user_id']=$this->db->insert_id() ;
+	             $data['error']="";
+	          }
+	         return $data;
+		}
+	public function user_details($user){
+		$data=array();
+		$data['error']="";
+		$sql = "Select *  FROM user_details where md5(USER_ID)='".makeSafe($user)."'";
+		return $this->db->query($sql)->row_array();
+					
+	}	
+	public function activate(){
+		$user_id=$this->input->post('actid');
+		$act_code=makeSafe($this->input->post('user_input'));
+		$sql = "Select *  FROM user_details where md5(USER_ID)='".makeSafe($user_id)."' and ACT_CODE='".$act_code."'";
+		$query = $this->db->query($sql);
+	         if ( $query->num_rows() > 0 )
+	            {
+	            	$sql = "UPDATE user_details set ACTIVATED='Y' where md5(USER_ID)='".makeSafe($user_id)."' and ACT_CODE='".$act_code."'";
+					$query = $this->db->query($sql);
+					echo "Your account has been activated,Login to your account and post Deals ";
+	            }
+	            else 
+	            return "Invalid Activation COde";
+	            
+					
+	}	
+}//class
