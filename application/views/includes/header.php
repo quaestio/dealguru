@@ -35,7 +35,7 @@
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header bg-light-blue">
-                                    <img src="<?=base_url();?>img/user.png" class="img-circle" alt="User Image" />
+                                    <img src="<?=$this->session->userdata('user_image_url')==""?'img/user.png':$this->session->userdata('user_image_url');?>" class="img-circle" alt="User Image" />
                                     <p>
                                         <?= $this->session->userdata('full_name')?> - Web Developer
                                         <small><?= $this->session->userdata('date_created');?></small>
